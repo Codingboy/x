@@ -28,11 +28,11 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	strcpy(outputFile, inputFile);
 	strcat(outputFile, ".enc");
 	QFile out(outputFile);
-/*	if (out.exists())
+	if (out.exists())
 	{
 		printf("\rfailed to encode %s: outputfile already exists\n", inputFile);
 		return false;
-	}*/
+	}
 	if (!out.open(QIODevice::WriteOnly))
 	{
 		printf("\r                                                                                                                                \rfailed to encode %s: outputfile not openable\n", inputFile);
@@ -104,10 +104,10 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		return false;
 	}
 	out.close();
-/*	if (!in.remove())
+	if (!in.remove())
 	{
 		return false;
-	}*/
+	}
 	printf("\r                                                                                                                                \rsucceed encoding %s\n", inputFile);
 	return true;
 }
@@ -145,12 +145,12 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	char outputFile[strlen(inputFile)-4+1];
 	strncpy(outputFile, inputFile, strlen(inputFile)-4);
 	QFile out(outputFile);
-/*	if (out.exists())
+	if (out.exists())
 	{
 		printf("\nfailed to decode %s: outputfile already exists\n", inputFile);
 		in.close();
 		return false;
-	}*/
+	}
 	if (!out.open(QIODevice::WriteOnly))
 	{
 		printf("\r                                                                                                                                \rfailed to decode %s: outputfile not openable\n", inputFile);
@@ -203,13 +203,13 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	if (!sha.matches(hash))
 	{
 		printf("\r                                                                                                                                \rfailed to decode %s: inputfile modified\n", inputFile);
-		//out.remove();
+		out.remove();
 		return false;
 	}
-/*	if (!in.remove())
+	if (!in.remove())
 	{
 		return false;
-	}*/
+	}
 	printf("\r                                                                                                                                \rsucceed decoding %s\n", inputFile);
 	return true;
 }
