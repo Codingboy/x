@@ -30,24 +30,24 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	QFile out(outputFile);
 	if (out.exists())
 	{
-		printf("\rfailed to encode %s: outputfile already exists\n", inputFile);
+		printf("\rfailed to encode %s: outputfile already exists                                \n", inputFile);
 		return false;
 	}
 	if (!out.open(QIODevice::WriteOnly))
 	{
-		printf("\r                                                                                                                                \rfailed to encode %s: outputfile not openable\n", inputFile);
+		printf("\rfailed to encode %s: outputfile not openable                                \n", inputFile);
 		return false;
 	}
 	if (out.write(salt, SALTSIZE) != SALTSIZE)
 	{
-		printf("\r                                                                                                                                \rfailed to encode %s: outputfile not writeable\n", inputFile);
+		printf("\rfailed to encode %s: outputfile not writeable                                \n", inputFile);
 		out.close();
 		out.remove();
 		return false;
 	}
 	if (out.write(iv, IVSIZE) != IVSIZE)
 	{
-		printf("\r                                                                                                                                \rfailed to encode %s: outputfile not writeable\n", inputFile);
+		printf("\rfailed to encode %s: outputfile not writeable                                \n", inputFile);
 		out.close();
 		out.remove();
 		return false;
@@ -55,7 +55,7 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	QFile in(inputFile);
 	if (!in.open(QIODevice::ReadOnly))
 	{
-		printf("\r                                                                                                                                \rfailed to encode %s: inputfile not openable\n", inputFile);
+		printf("\rfailed to encode %s: inputfile not openable                                \n", inputFile);
 		out.close();
 		out.remove();
 		return false;
@@ -64,7 +64,7 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	unsigned int toTreat = in.size();
 	while (treated < toTreat)
 	{
-		printf("\r                                                                                                                                \rencoding %s: %.1f %%", inputFile, (float)(treated*100)/toTreat);
+		printf("\rencoding %s: %.1f %%                                ", inputFile, (float)(treated*100)/toTreat);
 		unsigned int bufSize = BUFFERSIZE;
 		if (treated+bufSize > toTreat)
 		{
@@ -73,7 +73,7 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		char buf[bufSize];
 		if (in.read(buf, bufSize) != bufSize)
 		{
-			printf("\r                                                                                                                                \rfailed to encode %s: inputfile not readable\n", inputFile);
+			printf("\rfailed to encode %s: inputfile not readable                                \n", inputFile);
 			in.close();
 			out.close();
 			out.remove();
@@ -84,7 +84,7 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		aes.encode(buf, bufSize);
 		if (out.write(buf, bufSize) != bufSize)
 		{
-			printf("\r                                                                                                                                \rfailed to encode %s: outputfile not writeable\n", inputFile);
+			printf("\rfailed to encode %s: outputfile not writeable                                \n", inputFile);
 			in.close();
 			out.close();
 			out.remove();
@@ -93,12 +93,12 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		treated += bufSize;
 	}
 	in.close();
-	printf("\r                                                                                                                                \rencoding %s: %.1f %%", inputFile, (float)(treated*100)/toTreat);
+	printf("\rencoding %s: %.1f %%", inputFile, (float)(treated*100)/toTreat);
 	char hash[sha.size()];
 	sha.getHash(hash);
 	if (out.write(hash, sha.size()) != sha.size())
 	{
-		printf("\r                                                                                                                                \rfailed to encode %s: outputfile not writeable\n", inputFile);
+		printf("\rfailed to encode %s: outputfile not writeable                                \n", inputFile);
 		out.close();
 		out.remove();
 		return false;
@@ -108,7 +108,7 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	{
 		return false;
 	}
-	printf("\r                                                                                                                                \rsucceed encoding %s\n", inputFile);
+	printf("\rsucceed encoding %s                                \n", inputFile);
 	return true;
 }
 
@@ -118,20 +118,20 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	QFile in(inputFile);
 	if (!in.open(QIODevice::ReadOnly))
 	{
-		printf("\r                                                                                                                                \rfailed to decode %s: inputfile not openable\n", inputFile);
+		printf("\rfailed to decode %s: inputfile not openable                                \n", inputFile);
 		return false;
 	}
 	char salt[SALTSIZE];
 	if (in.read(salt, SALTSIZE) != SALTSIZE)
 	{
-		printf("\r                                                                                                                                \rfailed to decode %s: inputfile not readable\n", inputFile);
+		printf("\rfailed to decode %s: inputfile not readable                                \n", inputFile);
 		in.close();
 		return false;
 	}
 	char iv[IVSIZE];
 	if (in.read(iv, IVSIZE) != IVSIZE)
 	{
-		printf("\r                                                                                                                                \rfailed to decode %s: inputfile not readable\n", inputFile);
+		printf("\rfailed to decode %s: inputfile not readable                                \n", inputFile);
 		in.close();
 		return false;
 	}
@@ -147,13 +147,13 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	QFile out(outputFile);
 	if (out.exists())
 	{
-		printf("\nfailed to decode %s: outputfile already exists\n", inputFile);
+		printf("\nfailed to decode %s: outputfile already exists                                \n", inputFile);
 		in.close();
 		return false;
 	}
 	if (!out.open(QIODevice::WriteOnly))
 	{
-		printf("\r                                                                                                                                \rfailed to decode %s: outputfile not openable\n", inputFile);
+		printf("\rfailed to decode %s: outputfile not openable                                \n", inputFile);
 		in.close();
 		return false;
 	}
@@ -161,7 +161,7 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	unsigned int treated = 0;
 	while (treated < toTreat)
 	{
-		printf("\r                                                                                                                                \rdecoding %s: %.1f %%", inputFile, (float)(treated*100)/toTreat);
+		printf("\rdecoding %s: %.1f %%                                ", inputFile, (float)(treated*100)/toTreat);
 		unsigned int bufSize = BUFFERSIZE;
 		if (treated+bufSize > toTreat)
 		{
@@ -170,7 +170,7 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		char buf[bufSize];
 		if (in.read(buf, bufSize) != bufSize)
 		{
-			printf("\r                                                                                                                                \rfailed to decode %s: inputfile not readable\n", inputFile);
+			printf("\rfailed to decode %s: inputfile not readable                                \n", inputFile);
 			in.close();
 			out.close();
 			out.remove();
@@ -181,7 +181,7 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		sha.update(buf, bufSize);
 		if (out.write(buf, bufSize) != bufSize)
 		{
-			printf("\r                                                                                                                                \rfailed to decode %s: outputfile not writeable\n", inputFile);
+			printf("\rfailed to decode %s: outputfile not writeable                                \n", inputFile);
 			in.close();
 			out.close();
 			out.remove();
@@ -190,11 +190,11 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		treated += bufSize;
 	}
 	out.close();
-	printf("\r                                                                                                                                \rdecoding %s: %.1f %%", inputFile, (float)(treated*100)/toTreat);
+	printf("\rdecoding %s: %.1f %%", inputFile, (float)(treated*100)/toTreat);
 	char hash[sha.size()];
 	if (in.read(hash, sha.size()) != sha.size())
 	{
-		printf("\r                                                                                                                                \rfailed to decode %s: inputfile not readable\n", inputFile);
+		printf("\rfailed to decode %s: inputfile not readable                                \n", inputFile);
 		in.close();
 		out.remove();
 		return false;
@@ -202,7 +202,7 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	in.close();
 	if (!sha.matches(hash))
 	{
-		printf("\r                                                                                                                                \rfailed to decode %s: inputfile modified\n", inputFile);
+		printf("\rfailed to decode %s: inputfile modified                                \n", inputFile);
 		out.remove();
 		return false;
 	}
@@ -210,7 +210,7 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	{
 		return false;
 	}
-	printf("\r                                                                                                                                \rsucceed decoding %s\n", inputFile);
+	printf("\rsucceed decoding %s                                \n", inputFile);
 	return true;
 }
 
