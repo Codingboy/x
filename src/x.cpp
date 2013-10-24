@@ -9,7 +9,7 @@
 #define IVSIZE 16
 #define MUTATIONINTERVAL 16
 #define AESKEYLENGTH 32
-#define RINGKEYLENGTH 32
+#define RINGKEYLENGTH 64
 
 bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 {
