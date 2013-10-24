@@ -1,0 +1,2 @@
+Copyright (c) 2013 Daniel Tkocz
+This work is licensed under the BSD 2-Clause License. To view this license, open LICENSE.txt.
