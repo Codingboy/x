@@ -255,7 +255,7 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	if (!sha.matches(hash))
 	{
 		printf("\rfailed to decode %s: inputfile modified                                \n", inputFile);
-		//out.remove();
+		out.remove();
 		return false;
 	}
 	if (!in.remove())
