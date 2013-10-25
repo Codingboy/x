@@ -90,8 +90,8 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 		{
 			buf2[i] = ba.at(i);
 		}
-		//ring.encode(buf2, bufSize2);
-		//aes.encode(buf2, bufSize2);
+		ring.encode(buf2, bufSize2);
+		aes.encode(buf2, bufSize2);
 		{
 			unsigned int bufSizeHigh = bufSize2 >> 8;
 			unsigned int bufSizeLow = bufSize2 & 0xff;
@@ -213,8 +213,8 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 			out.remove();
 			return false;
 		}
-		//aes.decode(buf, bufSize);
-		//ring.decode(buf, bufSize);
+		aes.decode(buf, bufSize);
+		ring.decode(buf, bufSize);
 		QByteArray ba = qUncompress((const uchar*)buf, bufSize);
 		unsigned int bufSize2 = ba.size();
 		if (bufSize2 == 0)
