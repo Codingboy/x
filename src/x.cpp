@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <QByteArray>
 
-#define BUFFERSIZE 1024
+#define BUFFERSIZE 1024*8
 #define SALTSIZE 1024
 #define IVSIZE 16
 #define MUTATIONINTERVAL 16
