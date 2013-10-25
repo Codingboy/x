@@ -3,6 +3,8 @@
 #include <sha/sha.hpp>
 #include <ring/ring.hpp>
 #include <QFile>
+#include <cstdio>
+#include <QByteArray>
 
 #define BUFFERSIZE 1024
 #define SALTSIZE 1024
@@ -10,6 +12,7 @@
 #define MUTATIONINTERVAL 16
 #define AESKEYLENGTH 32
 #define RINGKEYLENGTH 64
+#define COMPRESSIONLEVEL 1
 
 bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 {
@@ -80,9 +83,32 @@ bool encodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 			return false;
 		}
 		sha.update(buf, bufSize);
-		ring.encode(buf, bufSize);
-		aes.encode(buf, bufSize);
-		if (out.write(buf, bufSize) != bufSize)
+		QByteArray ba = qCompress((const uchar*)buf, bufSize, COMPRESSIONLEVEL);
+		unsigned int bufSize2 = ba.size();
+		char buf2[bufSize2];
+		for (unsigned int i=0; i<bufSize2; i++)
+		{
+			buf2[i] = ba.at(i);
+		}
+		//ring.encode(buf2, bufSize2);
+		//aes.encode(buf2, bufSize2);
+		{
+			unsigned int bufSizeHigh = bufSize2 >> 8;
+			unsigned int bufSizeLow = bufSize2 & 0xff;
+			unsigned char bufSizeString[2];
+			bufSizeString[0] = (unsigned char) bufSizeHigh;
+			bufSizeString[1] = (unsigned char) bufSizeLow;
+			if (out.write((const char*)bufSizeString, 2) != 2)
+			{
+				printf("\rfailed to encode %s: outputfile not writeable                                \n", inputFile);
+				in.close();
+				out.close();
+				out.remove();
+				return false;
+			}
+		}
+
+		if (out.write(buf2, bufSize2) != bufSize2)
 		{
 			printf("\rfailed to encode %s: outputfile not writeable                                \n", inputFile);
 			in.close();
@@ -162,10 +188,21 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	while (treated < toTreat)
 	{
 		printf("\rdecoding %s: %.1f %%                                ", inputFile, (float)(treated*100)/toTreat);
-		unsigned int bufSize = BUFFERSIZE;
-		if (treated+bufSize > toTreat)
+		unsigned int bufSize;
 		{
-			bufSize = toTreat-treated;
+			unsigned char bufSizeString[2];
+			if (in.read((char*)bufSizeString, 2) != 2)
+			{
+				printf("\rfailed to decode %s: inputfile not readable                                \n", inputFile);
+				in.close();
+				out.close();
+				out.remove();
+				return false;
+			}
+			unsigned int bufSizeHigh = bufSizeString[0];
+			unsigned int bufSizeLow = bufSizeString[1];
+			bufSize = (bufSizeHigh<<8) | bufSizeLow;
+			treated += 2;
 		}
 		char buf[bufSize];
 		if (in.read(buf, bufSize) != bufSize)
@@ -176,10 +213,25 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 			out.remove();
 			return false;
 		}
-		aes.decode(buf, bufSize);
-		ring.decode(buf, bufSize);
-		sha.update(buf, bufSize);
-		if (out.write(buf, bufSize) != bufSize)
+		//aes.decode(buf, bufSize);
+		//ring.decode(buf, bufSize);
+		QByteArray ba = qUncompress((const uchar*)buf, bufSize);
+		unsigned int bufSize2 = ba.size();
+		if (bufSize2 == 0)
+		{
+			printf("\rfailed to decode %s: inputdata corrupted                                \n", inputFile);
+			in.close();
+			out.close();
+			out.remove();
+			return false;
+		}
+		char buf2[bufSize2];
+		for (unsigned int i=0; i<bufSize2; i++)
+		{
+			buf2[i] = ba.at(i);
+		}
+		sha.update(buf2, bufSize2);
+		if (out.write(buf2, bufSize2) != bufSize2)
 		{
 			printf("\rfailed to decode %s: outputfile not writeable                                \n", inputFile);
 			in.close();
@@ -203,7 +255,7 @@ bool decodeFile(const char* inputFile, const char* key, unsigned int keyLength)
 	if (!sha.matches(hash))
 	{
 		printf("\rfailed to decode %s: inputfile modified                                \n", inputFile);
-		out.remove();
+		//out.remove();
 		return false;
 	}
 	if (!in.remove())
